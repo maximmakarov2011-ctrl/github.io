@@ -250,7 +250,7 @@ function A(p) { return window.ASSETS[p] || ""; }
     get("s.bin").then(function (buf) {
       document.getElementById("song").src = URL.createObjectURL(new Blob([buf], { type: "audio/mpeg" }));
     }).catch(function () {});
-    if (true) get("b.bin").then(function (buf) {
+    if (false) get("b.bin").then(function (buf) {
       document.getElementById("bg").src = URL.createObjectURL(new Blob([buf], { type: "audio/mpeg" }));
     }).catch(function () {});
   }).catch(function (e) {
