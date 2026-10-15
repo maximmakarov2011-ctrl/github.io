@@ -250,7 +250,7 @@ function A(p) { return window.ASSETS[p] || ""; }
     document.body.appendChild(sc);
     // сначала фоновые дорожки (нужны с первого экрана), потом финальная песня
     function audio(f, id) { return get(f).then(function (buf) { document.getElementById(id).src = URL.createObjectURL(new Blob([buf], { type: "audio/mpeg" })); }).catch(function () {}); }
-    Promise.all([["b.bin", "bg"]].map(function (t) { return audio(t[0], t[1]); })).then(function () { return audio("s.bin", "song"); });
+    [["b.bin", "bg"], ["k.bin", "mus-kazan"]].concat([["s.bin", "song"]]).reduce(function (p, t) { return p.then(function () { return audio(t[0], t[1]); }); }, Promise.resolve());
   }).catch(function (e) {
     var m = String(e && (e.name || e.message) || e);
     fail(/OperationError/.test(m) ? "Ссылка не подходит. Отсканируй QR-код ещё раз." : "Ошибка загрузки (" + m + "). Нажми кнопку ниже.");
