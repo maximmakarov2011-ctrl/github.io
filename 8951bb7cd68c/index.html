@@ -183,6 +183,8 @@ p { font-size: 17px; line-height: 1.5; margin: 0 0 14px; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
 #gift { scroll-margin-top: 76px; }
+.bgm { position: fixed; right: 14px; bottom: calc(14px + env(safe-area-inset-bottom)); z-index: 12; width: 46px; height: 46px; border-radius: 50%; border: 0; font-size: 20px; cursor: pointer; background: rgba(255, 250, 244, .9); box-shadow: 0 8px 20px -10px rgba(27, 42, 73, .8); }
+.bgm[hidden] { display: none; }
 </style>
 </head>
 <body>
@@ -206,6 +208,8 @@ p { font-size: 17px; line-height: 1.5; margin: 0 0 14px; }
 </div>
 
 <audio id="song" preload="auto"></audio>
+<audio id="bg" loop preload="auto"></audio>
+<button class="bgm" id="bgm" type="button" hidden aria-label="Музыка вкл/выкл">🔇</button>
 <script>
 window.ASSETS = {};
 function A(p) { return window.ASSETS[p] || ""; }
@@ -245,6 +249,9 @@ function A(p) { return window.ASSETS[p] || ""; }
     document.body.appendChild(sc);
     get("s.bin").then(function (buf) {
       document.getElementById("song").src = URL.createObjectURL(new Blob([buf], { type: "audio/mpeg" }));
+    }).catch(function () {});
+    if (false) get("b.bin").then(function (buf) {
+      document.getElementById("bg").src = URL.createObjectURL(new Blob([buf], { type: "audio/mpeg" }));
     }).catch(function () {});
   }).catch(function (e) {
     var m = String(e && (e.name || e.message) || e);
