@@ -6,37 +6,250 @@
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#1b2a49">
-<link rel="icon" href="data:,">
 <title>Игра для Нади</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%E2%9D%A4%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  html, body { margin: 0; min-height: 100%; }
-  body { min-height: 100vh; display: grid; place-items: center; padding: 24px; box-sizing: border-box;
-         background: linear-gradient(180deg, #f9d9b8 0%, #e98f6f 45%, #2d3f66 80%, #1b2a49 100%);
-         color: #1b2a49; font: 600 18px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; text-align: center; }
-  #s { background: #fffaf4; border-radius: 22px; padding: 22px 26px; max-width: 360px; box-shadow: 0 18px 50px -18px rgba(27, 42, 73, .55); }
+/* Закат над Ижевским прудом: персик, золото, глубокий синий */
+:root {
+  --dusk: #1b2a49;
+  --dusk-2: #2d3f66;
+  --peach: #f7c6a3;
+  --apricot: #f2a477;
+  --gold: #e9a94b;
+  --gold-deep: #c9852a;
+  --cream: #fff7ee;
+  --paper: #fffaf4;
+  --ink: #2a2433;
+  --muted: #7a6a72;
+  --rose: #d9645a;
+  --ok: #3f8f6b;
+  --radius: 22px;
+  --shadow: 0 18px 50px -18px rgba(27, 42, 73, .55);
+  --display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --body: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  font-family: var(--body);
+  color: var(--ink);
+  background: var(--dusk);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+}
+
+/* небо-заставка */
+.sky {
+  position: fixed; inset: 0; z-index: -1;
+  background: linear-gradient(180deg, #f9d9b8 0%, #f6b98d 26%, #e98f6f 44%, #6d5a7c 62%, #2d3f66 80%, #1b2a49 100%);
+}
+.sun {
+  position: absolute; left: 50%; top: 40%; width: 46vmin; height: 46vmin; transform: translate(-50%, -50%);
+  border-radius: 50%; background: radial-gradient(circle, #ffe9b8 0%, #ffd48a 45%, rgba(255, 196, 120, 0) 70%);
+  filter: blur(2px); opacity: .9;
+}
+.water {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 38%;
+  background: repeating-linear-gradient(180deg, rgba(255, 214, 160, .10) 0 2px, transparent 2px 14px),
+              linear-gradient(180deg, rgba(27, 42, 73, .2), rgba(27, 42, 73, .85));
+}
+
+.top {
+  position: sticky; top: 0; z-index: 5;
+  padding: calc(10px + env(safe-area-inset-top)) 18px 10px;
+  background: linear-gradient(180deg, rgba(27, 42, 73, .82), rgba(27, 42, 73, 0));
+}
+.progress { height: 8px; border-radius: 99px; background: rgba(255, 247, 238, .25); overflow: hidden; }
+.progress-fill { height: 100%; width: 0; border-radius: 99px; background: linear-gradient(90deg, var(--gold), var(--peach)); transition: width .6s ease; }
+.progress-label { margin-top: 6px; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--cream); opacity: .9; text-align: center; font-variant-numeric: tabular-nums; }
+
+.stage {
+  min-height: 100svh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 18px 16px calc(28px + env(safe-area-inset-bottom));
+}
+
+.card {
+  width: 100%; max-width: 440px;
+  background: var(--paper);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 26px 22px 22px;
+  animation: rise .55s cubic-bezier(.2, .8, .2, 1) both;
+}
+.card.leave { animation: fall .35s ease-in both; }
+@keyframes rise { from { opacity: 0; transform: translateY(26px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes fall { to { opacity: 0; transform: translateY(-18px) scale(.98); } }
+
+.eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-deep); margin: 0 0 8px; }
+h1, h2 { font-family: var(--display); font-weight: 600; color: var(--dusk); margin: 0 0 12px; line-height: 1.12; text-wrap: balance; }
+h1 { font-size: 38px; }
+h2 { font-size: 30px; }
+p { font-size: 17px; line-height: 1.5; margin: 0 0 14px; }
+.sign { font-family: var(--display); font-style: italic; font-size: 22px; color: var(--dusk-2); text-align: right; margin-top: 4px; }
+
+.photo { margin: 0 -8px 16px; border-radius: 16px; overflow: hidden; background: #eadfd4; box-shadow: 0 10px 26px -14px rgba(27, 42, 73, .6); }
+.photo img { display: block; width: 100%; height: auto; max-height: 40vh; max-height: 40svh; object-fit: cover; }
+.photo.tall img { max-height: 44vh; max-height: 44svh; object-fit: cover; object-position: center 30%; }
+.final .photo img { max-height: 34vh; max-height: 34svh; }
+.caption { font-family: var(--display); font-size: 24px; line-height: 1.25; color: var(--dusk); text-align: center; margin: 4px 0 18px; text-wrap: balance; }
+.big-emoji { font-size: 72px; text-align: center; margin: 4px 0 10px; }
+
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; min-height: 56px; padding: 14px 18px;
+  border: 0; border-radius: 16px; cursor: pointer;
+  font: 700 18px/1.2 var(--body); color: var(--cream);
+  background: linear-gradient(135deg, var(--dusk-2), var(--dusk));
+  box-shadow: 0 10px 24px -12px rgba(27, 42, 73, .9);
+  transition: transform .15s ease, filter .2s ease;
+  text-decoration: none;
+}
+.btn:active { transform: scale(.98); }
+.btn:focus-visible, .choice:focus-visible, .field:focus-visible, .link:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.btn.gold { color: var(--dusk); background: linear-gradient(135deg, #ffd791, var(--gold)); }
+.btn.ghost { color: var(--dusk); background: transparent; box-shadow: inset 0 0 0 2px rgba(27, 42, 73, .18); }
+.btn + .btn { margin-top: 10px; }
+.row { display: flex; gap: 10px; margin-top: 10px; }
+.row .btn { margin: 0; }
+
+.choices { display: grid; gap: 10px; margin: 6px 0 4px; }
+.choice {
+  min-height: 54px; padding: 12px 16px; border-radius: 14px; cursor: pointer;
+  border: 2px solid rgba(27, 42, 73, .14); background: #fff;
+  font: 600 18px var(--body); color: var(--ink); text-align: left;
+  transition: border-color .2s, background .2s, transform .15s;
+}
+.choice:active { transform: scale(.99); }
+.choice.wrong { border-color: var(--rose); background: #fff0ec; }
+.choice.right { border-color: var(--ok); background: #eaf6f0; }
+
+.field {
+  width: 100%; min-height: 58px; padding: 14px 16px; border-radius: 14px;
+  border: 2px solid rgba(27, 42, 73, .18); background: #fff;
+  font: 600 20px var(--body); color: var(--ink);
+}
+.field::placeholder { color: #b7a9a3; font-weight: 500; }
+.shake { animation: shake .45s ease; }
+@keyframes shake { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
+
+.msg { min-height: 24px; margin: 10px 0 0; font-size: 16px; font-weight: 600; color: var(--rose); text-align: center; }
+.msg.ok { color: var(--ok); }
+.hint { margin: 12px 0 0; padding: 12px 14px; border-radius: 14px; background: #fff3dc; color: #7a4f12; font-size: 16px; }
+.link { background: none; border: 0; padding: 10px 6px; font: 600 15px var(--body); color: var(--dusk-2); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.hint-btn.blink { animation: blink 1.1s ease-in-out infinite; color: var(--gold-deep); }
+@keyframes blink { 50% { opacity: .35; } }
+.tools { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+
+/* экран Алины */
+.lock { text-align: center; }
+.lock-icon { width: 92px; height: 92px; margin: 0 auto 12px; border-radius: 50%; display: grid; place-items: center; font-size: 46px; background: radial-gradient(circle, #ffe2b5, var(--gold)); box-shadow: 0 10px 30px -10px rgba(201, 133, 42, .8); }
+.lock.open .lock-icon { animation: pop .6s ease; }
+@keyframes pop { 40% { transform: scale(1.18) rotate(-8deg); } }
+.field.big { text-align: center; font-size: 26px; letter-spacing: .12em; text-transform: uppercase; }
+
+/* главы */
+.chapter { text-align: center; padding: 40px 22px 26px; background: rgba(255, 250, 244, .94); }
+.chapter .num { font-family: var(--display); font-size: 20px; letter-spacing: .3em; text-transform: uppercase; color: var(--gold-deep); }
+.chapter h1 { font-size: 44px; margin: 6px 0 22px; }
+
+/* финал */
+.final .cert { position: relative; border-radius: 14px; overflow: hidden; margin: 6px -6px 14px; box-shadow: 0 16px 40px -16px rgba(27, 42, 73, .7); cursor: zoom-in; }
+.final .cert img { display: block; width: 100%; height: auto; }
+.final .cert::after { content: "нажми, чтобы приблизить"; position: absolute; right: 10px; bottom: 10px; padding: 4px 9px; border-radius: 99px; font-size: 12px; color: #fff; background: rgba(27, 42, 73, .65); }
+.wish { font-size: 17px; }
+.reveal { animation: rise .8s ease both; }
+.hidden { display: none !important; }
+
+/* просмотр с приближением */
+.viewer { position: fixed; inset: 0; z-index: 20; background: rgba(12, 18, 33, .94); display: flex; flex-direction: column; }
+.viewer[hidden] { display: none; }
+.viewer-scroll { flex: 1; overflow: auto; -webkit-overflow-scrolling: touch; display: flex; align-items: center; justify-content: center; padding: 56px 8px 8px; }
+.viewer-scroll img { max-width: 100%; height: auto; border-radius: 8px; touch-action: pinch-zoom; }
+.viewer-scroll.zoomed { justify-content: flex-start; align-items: flex-start; }
+.viewer-scroll.zoomed img { max-width: none; width: 220%; }
+.viewer-close { position: absolute; top: calc(10px + env(safe-area-inset-top)); right: 12px; width: 46px; height: 46px; border-radius: 50%; border: 0; font-size: 20px; background: rgba(255, 255, 255, .15); color: #fff; cursor: pointer; }
+.viewer-tip { color: #d8cfc8; font-size: 13px; text-align: center; margin: 6px 0 calc(14px + env(safe-area-inset-bottom)); }
+
+#confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 15; }
+
+@media (min-width: 520px) { h1 { font-size: 44px; } .card { padding: 32px 30px 26px; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+#gift { scroll-margin-top: 76px; }
 </style>
 </head>
 <body>
-<p id="s">Загружаю игру… ❤️</p>
+<div class="sky" aria-hidden="true"><div class="sun"></div><div class="water"></div></div>
+
+<header class="top" id="top" hidden>
+  <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="11" id="progress">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">уровень 1 из 11</div>
+</header>
+
+<main class="stage" id="stage" aria-live="polite"><section class="card" id="boot" style="text-align:center"><div class="big-emoji">❤️</div><p id="bootTxt">Загружаю игру…</p></section></main>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<div class="viewer" id="viewer" hidden role="dialog" aria-modal="true" aria-label="Просмотр">
+  <button class="viewer-close" id="viewerClose" type="button" aria-label="Закрыть">✕</button>
+  <div class="viewer-scroll" id="viewerScroll"><img id="viewerImg" alt=""></div>
+  <p class="viewer-tip">Разведи пальцами, чтобы приблизить</p>
+</div>
+
+<audio id="song" preload="auto"></audio>
 <script>
+window.ASSETS = {};
+function A(p) { return window.ASSETS[p] || ""; }
 (function () {
-  var s = document.getElementById("s");
-  function fail() { s.textContent = "Эта страница открывается только по полной ссылке из QR-кода."; }
-  try {
-    var k = location.hash.slice(1);
-    if (!k || !window.crypto || !crypto.subtle) return fail();
-    k = k.replace(/-/g, "+").replace(/_/g, "/"); while (k.length % 4) k += "=";
-    var raw = new Uint8Array(atob(k).split("").map(function (c) { return c.charCodeAt(0); }));
-    var keyP = crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["decrypt"]);
-    var binP = fetch("q.bin", { cache: "no-cache" }).then(function (r) { if (!r.ok) throw 0; return r.arrayBuffer(); });
-    Promise.all([keyP, binP]).then(function (a) {
-      var b = new Uint8Array(a[1]);
-      return crypto.subtle.decrypt({ name: "AES-GCM", iv: b.slice(0, 12) }, a[0], b.slice(12));
-    }).then(function (pt) {
-      var html = new TextDecoder().decode(pt);
-      document.open(); document.write(html); document.close();
-    }).catch(fail);
-  } catch (e) { fail(); }
+  var IMGS = {"photos/01-kot.jpg": "i/0.bin", "photos/02-kostovaty.jpg": "i/1.bin", "photos/03-teplohod.jpg": "i/2.bin", "photos/04-golubye-ozera.jpg": "i/3.bin", "photos/05-kazan-dvorec.jpg": "i/4.bin", "photos/06-naberezhnaya.jpg": "i/5.bin", "photos/07-otrazhenie.jpg": "i/6.bin", "photos/08-snowboard.jpg": "i/7.bin", "photos/09-pashka-prud.jpg": "i/8.bin", "photos/10-ohotnichiy-ray.jpg": "i/9.bin", "photos/11-roza.jpg": "i/10.bin", "assets/certificate-front.jpg": "i/11.bin", "assets/certificate-rules.jpg": "i/12.bin"};
+  var box = document.getElementById("boot"), txt = document.getElementById("bootTxt");
+  var finished = false;
+  function fail(msg) {
+    if (finished) return; finished = true;
+    box.innerHTML = '<p class="eyebrow">Не получилось загрузить</p>' +
+      '<p>' + msg + '</p><button class="btn gold" type="button" onclick="location.reload()">Попробовать ещё раз</button>';
+  }
+  var k = location.hash.slice(1);
+  if (!k) return fail("Эта страница открывается только по полной ссылке из QR-кода.");
+  if (!window.crypto || !crypto.subtle || !window.fetch || !window.Promise)
+    return fail("Этот браузер слишком старый или встроенный. Открой ссылку в Safari или Chrome.");
+  var timer = setTimeout(function () { fail("Интернет медленный — подожди немного и нажми кнопку ниже."); }, 60000);
+  k = k.replace(/-/g, "+").replace(/_/g, "/"); while (k.length % 4) k += "=";
+  var raw; try { raw = new Uint8Array(atob(k).split("").map(function (c) { return c.charCodeAt(0); })); }
+  catch (e) { return fail("Ссылка повреждена. Отсканируй QR-код ещё раз."); }
+  var keyP = crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["decrypt"]);
+  function get(u) {
+    return Promise.all([keyP, fetch(u).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status + " " + u); return r.arrayBuffer(); })])
+      .then(function (a) { var b = new Uint8Array(a[1]); return crypto.subtle.decrypt({ name: "AES-GCM", iv: b.slice(0, 12) }, a[0], b.slice(12)); });
+  }
+  var names = Object.keys(IMGS), total = names.length + 1, done = 0;
+  function tick() { done++; txt.textContent = "Загружаю игру… " + Math.round(done / total * 100) + "%"; }
+  var jobs = names.map(function (p) {
+    return get(IMGS[p]).then(function (buf) { window.ASSETS[p] = URL.createObjectURL(new Blob([buf], { type: "image/jpeg" })); tick(); });
+  });
+  jobs.push(get("c.bin").then(function (buf) { tick(); return buf; }));
+  Promise.all(jobs).then(function (res) {
+    if (finished) return;
+    finished = true; clearTimeout(timer);
+    var sc = document.createElement("script");
+    sc.text = new TextDecoder().decode(res[res.length - 1]);
+    document.body.appendChild(sc);
+    get("s.bin").then(function (buf) {
+      document.getElementById("song").src = URL.createObjectURL(new Blob([buf], { type: "audio/mpeg" }));
+    }).catch(function () {});
+  }).catch(function (e) {
+    var m = String(e && (e.name || e.message) || e);
+    fail(/OperationError/.test(m) ? "Ссылка не подходит. Отсканируй QR-код ещё раз." : "Ошибка загрузки (" + m + "). Нажми кнопку ниже.");
+  });
 })();
 </script>
 </body>
