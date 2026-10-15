@@ -208,7 +208,8 @@ p { font-size: 17px; line-height: 1.5; margin: 0 0 14px; }
 </div>
 
 <audio id="song" preload="auto"></audio>
-<audio id="bg" loop preload="auto"></audio>
+<audio id="bg" class="bgtrack" loop preload="auto"></audio>
+<audio id="mus-kazan" class="bgtrack" loop preload="auto"></audio>
 <button class="bgm" id="bgm" type="button" hidden aria-label="Музыка вкл/выкл">🔇</button>
 <script>
 window.ASSETS = {};
@@ -250,9 +251,9 @@ function A(p) { return window.ASSETS[p] || ""; }
     get("s.bin").then(function (buf) {
       document.getElementById("song").src = URL.createObjectURL(new Blob([buf], { type: "audio/mpeg" }));
     }).catch(function () {});
-    if (false) get("b.bin").then(function (buf) {
-      document.getElementById("bg").src = URL.createObjectURL(new Blob([buf], { type: "audio/mpeg" }));
-    }).catch(function () {});
+    [["b.bin", "bg"]].forEach(function (t) {
+      get(t[0]).then(function (buf) { document.getElementById(t[1]).src = URL.createObjectURL(new Blob([buf], { type: "audio/mpeg" })); }).catch(function () {});
+    });
   }).catch(function (e) {
     var m = String(e && (e.name || e.message) || e);
     fail(/OperationError/.test(m) ? "Ссылка не подходит. Отсканируй QR-код ещё раз." : "Ошибка загрузки (" + m + "). Нажми кнопку ниже.");
