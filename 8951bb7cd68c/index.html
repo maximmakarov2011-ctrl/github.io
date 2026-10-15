@@ -248,12 +248,9 @@ function A(p) { return window.ASSETS[p] || ""; }
     var sc = document.createElement("script");
     sc.text = new TextDecoder().decode(res[res.length - 1]);
     document.body.appendChild(sc);
-    get("s.bin").then(function (buf) {
-      document.getElementById("song").src = URL.createObjectURL(new Blob([buf], { type: "audio/mpeg" }));
-    }).catch(function () {});
-    [["b.bin", "bg"]].forEach(function (t) {
-      get(t[0]).then(function (buf) { document.getElementById(t[1]).src = URL.createObjectURL(new Blob([buf], { type: "audio/mpeg" })); }).catch(function () {});
-    });
+    // сначала фоновые дорожки (нужны с первого экрана), потом финальная песня
+    function audio(f, id) { return get(f).then(function (buf) { document.getElementById(id).src = URL.createObjectURL(new Blob([buf], { type: "audio/mpeg" })); }).catch(function () {}); }
+    Promise.all([["b.bin", "bg"]].map(function (t) { return audio(t[0], t[1]); })).then(function () { return audio("s.bin", "song"); });
   }).catch(function (e) {
     var m = String(e && (e.name || e.message) || e);
     fail(/OperationError/.test(m) ? "Ссылка не подходит. Отсканируй QR-код ещё раз." : "Ошибка загрузки (" + m + "). Нажми кнопку ниже.");
