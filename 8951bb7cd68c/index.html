@@ -187,6 +187,23 @@ p { font-size: 17px; line-height: 1.5; margin: 0 0 14px; }
 .bgm[hidden] { display: none; }
 .bgm.nudge { width: auto; padding: 0 18px; border-radius: 23px; font: 700 15px var(--body); color: var(--dusk); background: linear-gradient(135deg, #ffd791, var(--gold)); animation: nudge 1.4s ease-in-out infinite; }
 @keyframes nudge { 50% { transform: scale(1.06); box-shadow: 0 0 0 8px rgba(233, 169, 75, .25); } }
+
+/* слайд-шоу воспоминаний */
+.show { position: fixed; inset: 0; z-index: 18; background: #0d1426; opacity: 0; transition: opacity .8s ease; display: flex; flex-direction: column; }
+.show.on { opacity: 1; }
+.show-stage { position: relative; flex: 1; overflow: hidden; }
+.slide { position: absolute; inset: 0; display: grid; place-items: center; padding: calc(18px + env(safe-area-inset-top)) 12px 0; opacity: 0; transition: opacity 1.5s ease; }
+.slide.on { opacity: 1; }
+.slide img { max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 10px; box-shadow: 0 20px 60px -20px rgba(0, 0, 0, .8); transform: scale(1); transition: transform 7s ease-out; }
+.slide.on img { transform: scale(1.07); }
+.slide.text p { font-family: var(--display); font-style: italic; font-size: 30px; line-height: 1.3; color: var(--cream); text-align: center; max-width: 420px; margin: 0 16px; text-wrap: balance; }
+.show-cap { min-height: 3.2em; margin: 14px 20px 6px; font-family: var(--display); font-style: italic; font-size: 23px; line-height: 1.3; color: var(--peach); text-align: center; text-wrap: balance; opacity: 0; transition: opacity 1s ease; }
+.show-cap.on { opacity: 1; }
+.show-dots { display: flex; justify-content: center; gap: 7px; margin: 4px 0 6px; }
+.show-dots i { width: 7px; height: 7px; border-radius: 50%; background: rgba(255, 247, 238, .25); transition: background .4s; }
+.show-dots i.on { background: var(--gold); }
+.show-dots i.was { background: rgba(255, 247, 238, .6); }
+.show-skip { align-self: center; margin: 4px 0 calc(16px + env(safe-area-inset-bottom)); padding: 10px 18px; border: 0; border-radius: 99px; background: rgba(255, 255, 255, .12); color: var(--cream); font: 600 15px var(--body); cursor: pointer; }
 </style>
 </head>
 <body>
@@ -217,7 +234,7 @@ p { font-size: 17px; line-height: 1.5; margin: 0 0 14px; }
 window.ASSETS = {};
 function A(p) { return window.ASSETS[p] || ""; }
 (function () {
-  var IMGS = {"photos/01-kot.jpg": "i/0.bin", "photos/02-kostovaty.jpg": "i/1.bin", "photos/03-teplohod.jpg": "i/2.bin", "photos/04-golubye-ozera.jpg": "i/3.bin", "photos/05-kazan-dvorec.jpg": "i/4.bin", "photos/06-naberezhnaya.jpg": "i/5.bin", "photos/07-otrazhenie.jpg": "i/6.bin", "photos/08-snowboard.jpg": "i/7.bin", "photos/09-pashka-prud.jpg": "i/8.bin", "photos/10-ohotnichiy-ray.jpg": "i/9.bin", "photos/11-roza.jpg": "i/10.bin", "assets/certificate-front.jpg": "i/11.bin", "assets/certificate-rules.jpg": "i/12.bin"}, FIRST = ["b.bin", "bg"], REST = [["k.bin", "mus-kazan"]];
+  var IMGS = {"photos/01-kot.jpg": "i/0.bin", "photos/02-kostovaty.jpg": "i/1.bin", "photos/03-teplohod.jpg": "i/2.bin", "photos/04-golubye-ozera.jpg": "i/3.bin", "photos/05-kazan-dvorec.jpg": "i/4.bin", "photos/06-naberezhnaya.jpg": "i/5.bin", "photos/07-otrazhenie.jpg": "i/6.bin", "photos/08-snowboard.jpg": "i/7.bin", "photos/09-pashka-prud.jpg": "i/8.bin", "photos/10-ohotnichiy-ray.jpg": "i/9.bin", "photos/11-roza.jpg": "i/10.bin", "photos/s-kazan-kreml.jpg": "i/11.bin", "photos/s-kazan-most.jpg": "i/12.bin", "photos/s-kazan-naberezh.jpg": "i/13.bin", "photos/s-kazan-noch.jpg": "i/14.bin", "photos/s-venesuela.jpg": "i/15.bin", "assets/certificate-front.jpg": "i/16.bin", "assets/certificate-rules.jpg": "i/17.bin"}, FIRST = ["b.bin", "bg"], REST = [["k.bin", "mus-kazan"]];
   var box = document.getElementById("boot"), txt = document.getElementById("bootTxt");
   var finished = false;
   function fail(msg) {
