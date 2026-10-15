@@ -243,7 +243,7 @@ p { font-size: 17px; line-height: 1.5; margin: 0 0 14px; }
 window.ASSETS = {};
 function A(p) { return window.ASSETS[p] || ""; }
 (function () {
-  var IMGS = {"photos/01-kot.jpg": "i/0.bin", "photos/02-kostovaty.jpg": "i/1.bin", "photos/03-teplohod.jpg": "i/2.bin", "photos/04-golubye-ozera.jpg": "i/3.bin", "photos/05-kazan-dvorec.jpg": "i/4.bin", "photos/06-naberezhnaya.jpg": "i/5.bin", "photos/07-otrazhenie.jpg": "i/6.bin", "photos/08-snowboard.jpg": "i/7.bin", "photos/09-pashka-prud.jpg": "i/8.bin", "photos/10-ohotnichiy-ray.jpg": "i/9.bin", "photos/11-roza.jpg": "i/10.bin", "photos/s-cyganka.jpg": "i/11.bin", "photos/s-kama-teplohod.jpg": "i/12.bin", "photos/s-kazan-kreml.jpg": "i/13.bin", "photos/s-kazan-most.jpg": "i/14.bin", "photos/s-kazan-naberezh.jpg": "i/15.bin", "photos/s-kazan-noch.jpg": "i/16.bin", "photos/s-more.jpg": "i/17.bin", "photos/s-sinica.jpg": "i/18.bin", "photos/s-snowboard.jpg": "i/19.bin", "photos/s-venesuela.jpg": "i/20.bin", "assets/certificate-front.jpg": "i/21.bin", "assets/certificate-rules.jpg": "i/22.bin"}, FIRST = ["b.bin", "bg"], REST = [["k.bin", "mus-kazan"]];
+  var IMGS = {"photos/01-kot.jpg": "i/0.bin", "photos/02-kostovaty.jpg": "i/1.bin", "photos/03-teplohod.jpg": "i/2.bin", "photos/04-golubye-ozera.jpg": "i/3.bin", "photos/05-kazan-dvorec.jpg": "i/4.bin", "photos/06-naberezhnaya.jpg": "i/5.bin", "photos/07-otrazhenie.jpg": "i/6.bin", "photos/08-snowboard.jpg": "i/7.bin", "photos/09-pashka-prud.jpg": "i/8.bin", "photos/10-ohotnichiy-ray.jpg": "i/9.bin", "photos/11-roza.jpg": "i/10.bin", "photos/s-cyganka.jpg": "i/11.bin", "photos/s-kafe-menu.jpg": "i/12.bin", "photos/s-kama-teplohod.jpg": "i/13.bin", "photos/s-kazan-kreml.jpg": "i/14.bin", "photos/s-kazan-most.jpg": "i/15.bin", "photos/s-kazan-naberezh.jpg": "i/16.bin", "photos/s-kazan-noch.jpg": "i/17.bin", "photos/s-luna.jpg": "i/18.bin", "photos/s-more.jpg": "i/19.bin", "photos/s-obryv-more.jpg": "i/20.bin", "photos/s-sinica.jpg": "i/21.bin", "photos/s-snowboard.jpg": "i/22.bin", "photos/s-venesuela.jpg": "i/23.bin", "photos/s-vk-kacheli.jpg": "i/24.bin", "photos/s-vk-kafe.jpg": "i/25.bin", "assets/certificate-front.jpg": "i/26.bin", "assets/certificate-rules.jpg": "i/27.bin"}, FIRST = ["b.bin", "bg"], REST = [["k.bin", "mus-kazan"]];
   var box = document.getElementById("boot"), txt = document.getElementById("bootTxt");
   var finished = false;
   function fail(msg) {
@@ -264,7 +264,9 @@ function A(p) { return window.ASSETS[p] || ""; }
     return Promise.all([keyP, fetch(u).then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status + " " + u); return r.arrayBuffer(); })])
       .then(function (a) { var b = new Uint8Array(a[1]); return crypto.subtle.decrypt({ name: "AES-GCM", iv: b.slice(0, 12) }, a[0], b.slice(12)); });
   }
-  var names = Object.keys(IMGS), total = names.length + 1 + (FIRST ? 1 : 0), done = 0;
+  // фото для слайд-шоу (s-*) грузим в фоне после старта — первый показ только после ответа
+  var LATER = Object.keys(IMGS).filter(function (p) { return /\/s-/.test(p); });
+  var names = Object.keys(IMGS).filter(function (p) { return LATER.indexOf(p) < 0; }), total = names.length + 1 + (FIRST ? 1 : 0), done = 0;
   function tick() { done++; txt.textContent = "Загружаю игру… " + Math.round(done / total * 100) + "%"; }
   var jobs = names.map(function (p) {
     return get(IMGS[p]).then(function (buf) { window.ASSETS[p] = URL.createObjectURL(new Blob([buf], { type: "image/jpeg" })); tick(); });
@@ -280,7 +282,11 @@ function A(p) { return window.ASSETS[p] || ""; }
     document.body.appendChild(sc);
     // сначала фоновые дорожки (нужны с первого экрана), потом финальная песня
     function audio(f, id) { return get(f).then(function (buf) { document.getElementById(id).src = URL.createObjectURL(new Blob([buf], { type: "audio/mpeg" })); }).catch(function () {}); }
-    REST.concat([["s.bin", "song"]]).reduce(function (p, t) { return p.then(function () { return audio(t[0], t[1]); }); }, Promise.resolve());
+    Promise.all(LATER.map(function (p) {
+      return get(IMGS[p]).then(function (buf) { window.ASSETS[p] = URL.createObjectURL(new Blob([buf], { type: "image/jpeg" })); }).catch(function () {});
+    })).then(function () {
+      return REST.concat([["s.bin", "song"]]).reduce(function (p, t) { return p.then(function () { return audio(t[0], t[1]); }); }, Promise.resolve());
+    });
   }).catch(function (e) {
     var m = String(e && (e.name || e.message) || e);
     fail(/OperationError/.test(m) ? "Ссылка не подходит. Отсканируй QR-код ещё раз." : "Ошибка загрузки (" + m + "). Нажми кнопку ниже.");
